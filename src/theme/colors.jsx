@@ -8,6 +8,9 @@ const colors = {
     warning: (opacity = 1) => `rgba(255, 193, 7, ${opacity})`,            // Warna peringatan (kuning)
     error: (opacity = 1) => `rgba(244, 67, 54, ${opacity})`,              // Warna kesalahan (merah)
     success: (opacity = 1) => `rgba(76, 175, 80, ${opacity})`,            // Warna sukses (sama dengan primary)
+    black: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    white: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    
 };
 
 export default colors;
