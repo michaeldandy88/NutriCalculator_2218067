@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     cardText: {
       fontSize: 10,
       fontFamily: fontType['Poppins-Medium'],
-      color: colors.textSecondary(0.6), // mengganti grey dengan textSecondary
+      color: colors.textSecondary(0.6), 
     },
     cardImage: {
       width: 94,
