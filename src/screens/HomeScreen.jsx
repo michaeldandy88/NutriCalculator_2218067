@@ -78,11 +78,11 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.content}>
           <Text style={styles.sectionTitle}>Fitur Utama</Text>
           <View style={styles.menuContainer}>
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={() => navigation.navigate('Form')}>
               <AddCircle size={32} color={colors.primaryGreen()} variant="Bold" />
               <Text style={styles.menuText}>Tambah Makanan</Text>
             </Pressable>
-            <Pressable style={styles.menuItem}>
+           <Pressable style={styles.menuItem} onPress={() => navigation.navigate('NutritionChart')}>
               <Chart size={32} color={colors.primaryGreen()} variant="Bold" />
               <Text style={styles.menuText}>Grafik Nutrisi</Text>
             </Pressable>
