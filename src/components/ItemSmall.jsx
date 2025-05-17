@@ -1,12 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import FastImage from '@d11/react-native-fast-image';
 import { Heart, Clock, Message } from 'iconsax-react-native';
-import React from 'react';
 import { fontType, colors } from '../theme';
 
 const ItemSmall = ({ item }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <View style={styles.cardItem}>
+    <Animated.View style={[styles.cardItem, { opacity: fadeAnim }]}>
       <FastImage
         style={styles.cardImage}
         source={{
@@ -31,7 +41,7 @@ const ItemSmall = ({ item }) => {
           <Text style={styles.cardText}>{item.totalComments}</Text>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,6 +9,8 @@ import {
   StatusBar,
   FlatList,
   TouchableOpacity,
+  Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { SearchNormal1, Heart, Chart, AddCircle } from 'iconsax-react-native';
 import { fontType, colors } from '../theme';
@@ -57,6 +59,29 @@ const HomeScreen = ({ navigation }) => {
     </ScrollView>
   );
 
+  const bounceAdd = useRef(new Animated.Value(1)).current;
+  const bounceChart = useRef(new Animated.Value(1)).current;
+  const bounceBlog = useRef(new Animated.Value(1)).current;
+
+  const bounceIn = (anim) => {
+    Animated.spring(anim, {
+      toValue: 0.9,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const bounceOut = (anim, navigateTo) => {
+    Animated.spring(anim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start(() => {
+      navigation.navigate(navigateTo);
+    });
+  };
+
+  
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primaryGreen()} barStyle="light-content" />
@@ -78,18 +103,30 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.content}>
           <Text style={styles.sectionTitle}>Fitur Utama</Text>
           <View style={styles.menuContainer}>
-            <Pressable style={styles.menuItem} onPress={() => navigation.navigate('Form')}>
-              <AddCircle size={32} color={colors.primaryGreen()} variant="Bold" />
-              <Text style={styles.menuText}>Tambah Makanan</Text>
-            </Pressable>
-           <Pressable style={styles.menuItem} onPress={() => navigation.navigate('NutritionChart')}>
-              <Chart size={32} color={colors.primaryGreen()} variant="Bold" />
-              <Text style={styles.menuText}>Grafik Nutrisi</Text>
-            </Pressable>
-            <Pressable style={styles.menuItem} onPress={() => navigation.navigate('Blog')}>
-              <Heart size={32} color={colors.primaryGreen()} variant="Bold" />
-              <Text style={styles.menuText}>Kesehatan</Text>
-            </Pressable>
+            <TouchableWithoutFeedback
+              onPressIn={() => bounceIn(bounceAdd)}
+              onPressOut={() => bounceOut(bounceAdd, 'Form')}>
+              <Animated.View style={[styles.menuItem, { transform: [{ scale: bounceAdd }] }]}>
+                <AddCircle size={32} color={colors.primaryGreen()} variant="Bold" />
+                <Text style={styles.menuText}>Tambah Makanan</Text>
+               </Animated.View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPressIn={() => bounceIn(bounceChart)}
+              onPressOut={() => bounceOut(bounceChart, 'NutritionChart')}>
+              <Animated.View style={[styles.menuItem, { transform: [{ scale: bounceChart }] }]}>
+                <Chart size={32} color={colors.primaryGreen()} variant="Bold" />
+               <Text style={styles.menuText}>Grafik Nutrisi</Text>
+               </Animated.View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPressIn={() => bounceIn(bounceBlog)}
+              onPressOut={() => bounceOut(bounceBlog, 'Blog')}>
+              <Animated.View style={[styles.menuItem, { transform: [{ scale: bounceBlog }] }]}>
+                <Heart size={32} color={colors.primaryGreen()} variant="Bold" />
+                <Text style={styles.menuText}>Kesehatan</Text>
+                 </Animated.View>
+            </TouchableWithoutFeedback>
           </View>
         </View>
 

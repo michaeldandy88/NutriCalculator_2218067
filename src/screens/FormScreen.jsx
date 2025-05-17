@@ -15,9 +15,8 @@ const FormScreen = ({ navigation }) => {
       return;
     }
 
-    // Simulasi submit
     Alert.alert('Berhasil', 'Data berhasil ditambahkan!');
-    navigation.goBack(); // kembali ke screen sebelumnya
+    navigation.goBack(); 
   };
 
   return (
