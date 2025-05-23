@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { colors, fontType } from '../theme';
 import { createNutrisi } from '../firebase/nutrisi';
+import notifee from '@notifee/react-native';
 
 const FormScreen = ({ navigation }) => {
   const [nama, setNama] = useState('');
@@ -10,29 +11,54 @@ const FormScreen = ({ navigation }) => {
   const [lemak, setLemak] = useState('');
   const [karbo, setKarbo] = useState('');
 
-  const handleSubmit = async () => {
-  if (!nama || !kalori || !protein || !lemak || !karbo) {
-    Alert.alert('Peringatan', 'Semua field harus diisi!');
-    return;
-  }
+  useEffect(() => {
+    const createChannel = async () => {
+      await notifee.createChannel({
+        id: 'nutrisi',
+        name: 'Notifikasi Nutrisi',
+      });
+    };
+    createChannel();
+  }, []);
 
-  try {
-    await createNutrisi({
-      nama,
-      kalori: Number(kalori),
-      protein: Number(protein),
-      lemak: Number(lemak),
-      karbo: Number(karbo),
-      createdAt: new Date().toISOString(),
+  const showNotification = async () => {
+    await notifee.requestPermission();
+
+    await notifee.displayNotification({
+      title: 'Data Nutrisi Tersimpan',
+      body: `Data untuk "${nama}" berhasil ditambahkan.`,
+      android: {
+        channelId: 'nutrisi',
+        smallIcon: 'ic_launcher', 
+      },
     });
+  };
 
-    Alert.alert('Berhasil', 'Data berhasil disimpan ke Firebase!');
-    navigation.goBack();
-  } catch (error) {
-    console.error(error);
-    Alert.alert('Gagal', 'Terjadi kesalahan saat menyimpan.');
-  }
-};
+  const handleSubmit = async () => {
+    if (!nama || !kalori || !protein || !lemak || !karbo) {
+      Alert.alert('Peringatan', 'Semua field harus diisi!');
+      return;
+    }
+
+    try {
+      await createNutrisi({
+        nama,
+        kalori: Number(kalori),
+        protein: Number(protein),
+        lemak: Number(lemak),
+        karbo: Number(karbo),
+        createdAt: new Date().toISOString(),
+      });
+
+      await showNotification(); 
+
+      Alert.alert('Berhasil', 'Data berhasil disimpan ke Firebase!');
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Gagal', 'Terjadi kesalahan saat menyimpan.');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -43,6 +69,8 @@ const FormScreen = ({ navigation }) => {
         value={nama}
         onChangeText={setNama}
         style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
       <TextInput
         placeholder="Kalori (kkal)"
@@ -50,6 +78,8 @@ const FormScreen = ({ navigation }) => {
         onChangeText={setKalori}
         keyboardType="numeric"
         style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
       <TextInput
         placeholder="Protein (g)"
@@ -57,6 +87,8 @@ const FormScreen = ({ navigation }) => {
         onChangeText={setProtein}
         keyboardType="numeric"
         style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
       <TextInput
         placeholder="Lemak (g)"
@@ -64,6 +96,8 @@ const FormScreen = ({ navigation }) => {
         onChangeText={setLemak}
         keyboardType="numeric"
         style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
       <TextInput
         placeholder="Karbohidrat (g)"
@@ -71,6 +105,8 @@ const FormScreen = ({ navigation }) => {
         onChangeText={setKarbo}
         keyboardType="numeric"
         style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
       <View style={styles.buttonContainer}>
