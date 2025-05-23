@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
 import { colors, fontType } from '../theme';
+import { createNutrisi } from '../firebase/nutrisi';
 
 const FormScreen = ({ navigation }) => {
   const [nama, setNama] = useState('');
@@ -9,15 +10,29 @@ const FormScreen = ({ navigation }) => {
   const [lemak, setLemak] = useState('');
   const [karbo, setKarbo] = useState('');
 
-  const handleSubmit = () => {
-    if (!nama || !kalori || !protein || !lemak || !karbo) {
-      Alert.alert('Peringatan', 'Semua field harus diisi!');
-      return;
-    }
+  const handleSubmit = async () => {
+  if (!nama || !kalori || !protein || !lemak || !karbo) {
+    Alert.alert('Peringatan', 'Semua field harus diisi!');
+    return;
+  }
 
-    Alert.alert('Berhasil', 'Data berhasil ditambahkan!');
-    navigation.goBack(); 
-  };
+  try {
+    await createNutrisi({
+      nama,
+      kalori: Number(kalori),
+      protein: Number(protein),
+      lemak: Number(lemak),
+      karbo: Number(karbo),
+      createdAt: new Date().toISOString(),
+    });
+
+    Alert.alert('Berhasil', 'Data berhasil disimpan ke Firebase!');
+    navigation.goBack();
+  } catch (error) {
+    console.error(error);
+    Alert.alert('Gagal', 'Terjadi kesalahan saat menyimpan.');
+  }
+};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

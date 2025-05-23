@@ -1,66 +1,64 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { colors, fontType } from '../theme';
-
-const screenWidth = Dimensions.get('window').width;
+import { getAllNutrisi } from '../firebase/nutrisi';
 
 const NutritionChartScreen = () => {
-  
-  const data = {
-    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    getAllNutrisi().then(setData).catch(console.error);
+  }, []);
+
+  // Validasi dan konversi data
+  const validData = data.filter(item => {
+    const kalori = Number(item.kalori);
+    return !isNaN(kalori) && isFinite(kalori);
+  });
+
+  const chartData = {
+    labels: validData.map(item => item.nama),
     datasets: [
       {
-        data: [1800, 2000, 1500, 1700, 2200, 1900, 2100],
-        color: () => colors.primaryGreen(),
-        strokeWidth: 2,
+        data: validData.map(item => Number(item.kalori)),
       },
     ],
-    legend: ['Kalori (kkal)'],
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Grafik Kalori Mingguan</Text>
-      <LineChart
-        data={data}
-        width={screenWidth - 40}
-        height={250}
-        chartConfig={chartConfig}
-        bezier
-        style={styles.chart}
-      />
+    <ScrollView>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 }}>
+        Grafik Kalori Makanan
+      </Text>
+
+      {validData.length === 0 ? (
+        <Text style={{ textAlign: 'center', color: 'gray', marginTop: 20 }}>
+          Belum ada data nutrisi untuk ditampilkan.
+        </Text>
+      ) : (
+        <LineChart
+          data={chartData}
+          width={Dimensions.get('window').width - 20}
+          height={220}
+          yAxisSuffix=" kkal"
+          chartConfig={{
+            backgroundColor: '#ffffff',
+            backgroundGradientFrom: '#4CAF50',
+            backgroundGradientTo: '#81C784',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: () => '#fff',
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 16,
+            alignSelf: 'center',
+          }}
+        />
+      )}
     </ScrollView>
   );
 };
-
-const chartConfig = {
-  backgroundGradientFrom: '#ffffff',
-  backgroundGradientTo: '#ffffff',
-  color: (opacity = 1) => `rgba(0, 122, 51, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  propsForDots: {
-    r: '4',
-    strokeWidth: '2',
-    stroke: '#006633',
-  },
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background(),
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: fontType['Poppins-Bold'],
-    marginBottom: 20,
-    color: colors.textPrimary(),
-  },
-  chart: {
-    borderRadius: 10,
-  },
-});
 
 export default NutritionChartScreen;
